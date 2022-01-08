@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel = "stylesheet" href = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
+<script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<center>
+   {% for message in messages %}
+   <div id="message_container" class="alert alert-{{ message.tags }}" role="alert"
+      style="color: black;font-size: 16px; width: 544px">{{ message }}
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+   </div>
+   {% endfor %}
+</center>
+<main>
+   <div class="container-fluid px-4">
+      <ol class="breadcrumb mb-4">
+         <br/>
+      </ol>
+      <div class="row">
+         <center>
+            <form method="post">
+               {% csrf_token %}
+               <input type="text" name="city_name" class="form-control" style="width:294px;">
+               <button type="submit" style="width:85px; margin-left:388px; margin-top:-65px;" class="btn btn-primary">Search</button>
+            </form>
+         </center>
+      </div>
+      <br/>
+      <div class="row">
+         {% if latitude %}
+         <div id = "map" style = "width:804px; height:373px; margin-left:138px;"></div>
+         {% endif %}
+      </div>
+   </div>
+</main>
+{% block scripts %}
+<script>
+    var latitude = '{{ latitude }}';
+    var longitude = '{{ longitude }}';
+
+   var map = L.map('map').setView([latitude, longitude], 13);
+   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+   }).addTo(map);
+
+   L.marker([latitude, longitude]).addTo(map)
+   .bindPopup('Temperature Celsius :{{celcisus_temp}} .<br> Current Humidity: {{current_humidity}}.')
+   .openPopup();
+</script>
+<script>
+   var message_ele = document.getElementById("message_container");
+   setTimeout(function(){
+   message_ele.style.display = "none";
+   }, 4000);
+</script>
+{% endblock %}
+{% endblock %}
